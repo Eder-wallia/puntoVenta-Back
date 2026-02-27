@@ -3,12 +3,12 @@ const Cliente = require("../db/models/clientesModel");
 // Crear cliente
 exports.crearCliente = async (req, res) => {
   try {
-    const { nombre, email, password, role, activo } = req.body;
+    const { nombre, email, telefono, domicilio } = req.body;
 
-    if (!nombre || !email || !password) {
+    if (!nombre || !email) {
       return res
         .status(400)
-        .json({ mensaje: "Nombre, email y password son requeridos" });
+        .json({ mensaje: "Nombre y email son requeridos" });
     }
 
     const clienteExistente = await Cliente.findOne({ email });
@@ -19,9 +19,9 @@ exports.crearCliente = async (req, res) => {
     const nuevoCliente = new Cliente({
       nombre,
       email,
-      password,
-      role: role || "usuario",
-      activo: activo !== undefined ? activo : true,
+      telefono,
+      domicilio,
+      deleted: false,
     });
 
     await nuevoCliente.save();
@@ -67,11 +67,19 @@ exports.obtenerClientePorId = async (req, res) => {
 exports.actualizarCliente = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nombre, email, password, role, activo } = req.body;
+    const { nombre, email, telefono, domicilio } = req.body;
+
+    // Preparar datos a actualizar
+    const datosActualizar = {};
+
+    if (nombre) datosActualizar.nombre = nombre;
+    if (email) datosActualizar.email = email;
+    if (telefono) datosActualizar.telefono = telefono;
+    if (domicilio) datosActualizar.domicilio = domicilio;
 
     const cliente = await Cliente.findByIdAndUpdate(
       id,
-      { nombre, email, password, role, activo },
+      datosActualizar,
       { new: true, runValidators: true }
     );
 

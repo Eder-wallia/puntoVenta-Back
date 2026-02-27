@@ -1,7 +1,8 @@
 const Usuario = require("../db/models/loginModel");
 const jwt = require("jsonwebtoken");
+const { comparePassword } = require("../services/passwordService");
 
-const SECRET_KEY = process.env.JWT_SECRET || "tu_clave_secreta_aqui";
+const SECRET_KEY = process.env.SECRET_KEY;
 
 // Middleware de Login - Validar usuario y crear token
 exports.login = async (req, res) => {
@@ -19,13 +20,16 @@ exports.login = async (req, res) => {
     const usuario = await Usuario.findOne({ email });
 
     if (!usuario) {
+      console.log("Usuario no encontrado con email:", email);
       return res.status(401).json({
         mensaje: "Credenciales inválidas",
       });
     }
 
-    // Validar password (aquí deberías usar bcrypt en producción)
-    if (usuario.password !== password) {
+    // Validar password con servicio
+    const passwordValido = await comparePassword(password, usuario.password);
+    if (!passwordValido) {
+      console.log("Password inválido para email:", email);
       return res.status(401).json({
         mensaje: "Credenciales inválidas",
       });
@@ -33,6 +37,7 @@ exports.login = async (req, res) => {
 
     // Verificar si está activo
     if (!usuario.activo) {
+      console.log("Usuario inactivo con email:", email);
       return res.status(401).json({
         mensaje: "Usuario inactivo",
       });

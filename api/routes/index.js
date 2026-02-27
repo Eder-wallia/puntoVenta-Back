@@ -15,25 +15,25 @@ const routerApi = (app) => {
   router.post("/clientes", validarToken, clientesController.crearCliente);
   router.get("/clientes", validarToken, clientesController.obtenerClientes);
   router.get("/clientes/:id", validarToken, clientesController.obtenerClientePorId);
-  router.put("/clientes/:id", validarToken, clientesController.actualizarCliente);
-  router.delete("/clientes/:id", validarToken, clientesController.eliminarCliente);
+//   router.put("/clientes/:id", validarToken, clientesController.actualizarCliente);
+//   router.delete("/clientes/:id", validarToken, clientesController.eliminarCliente);
 
   // Rutas de Vehículos (protegidas con token)
   router.post("/vehiculos", validarToken, vehiculosController.crearVehiculo);
   router.get("/vehiculos", validarToken, vehiculosController.obtenerVehiculos);
   router.get("/vehiculos/:id", validarToken, vehiculosController.obtenerVehiculoPorId);
-  router.put("/vehiculos/:id", validarToken, vehiculosController.actualizarVehiculo);
-  router.delete("/vehiculos/:id", validarToken, vehiculosController.eliminarVehiculo);
+//   router.put("/vehiculos/:id", validarToken, vehiculosController.actualizarVehiculo);
+//   router.delete("/vehiculos/:id", validarToken, vehiculosController.eliminarVehiculo);
 
   // Rutas de Trabajos (protegidas con token)
   router.post("/trabajos", validarToken, trabajosController.crearTrabajo);
   router.get("/trabajos", validarToken, trabajosController.obtenerTrabajos);
   router.get("/trabajos/:id", validarToken, trabajosController.obtenerTrabajoPorId);
-  router.put("/trabajos/:id", validarToken, trabajosController.actualizarTrabajo);
-  router.delete("/trabajos/:id", validarToken, trabajosController.eliminarTrabajo);
-  router.patch("/trabajos/:id/estatus", validarToken, trabajosController.cambiarEstatus);
-  router.get("/trabajos/cliente/:clienteId", validarToken, trabajosController.obtenerTrabajosPorCliente);
-  router.get("/trabajos/estatus/:estatus", validarToken, trabajosController.obtenerTrabajosPorEstatus);
+//   router.put("/trabajos/:id", validarToken, trabajosController.actualizarTrabajo);
+//   router.delete("/trabajos/:id", validarToken, trabajosController.eliminarTrabajo);
+//   router.patch("/trabajos/:id/estatus", validarToken, trabajosController.cambiarEstatus);
+//   router.get("/trabajos/cliente/:clienteId", validarToken, trabajosController.obtenerTrabajosPorCliente);
+//   router.get("/trabajos/estatus/:estatus", validarToken, trabajosController.obtenerTrabajosPorEstatus);
 
   app.use("/api", router);
 };

@@ -1,0 +1,111 @@
+const Usuario = require("../db/models/loginModel");
+const jwt = require("jsonwebtoken");
+
+const SECRET_KEY = process.env.JWT_SECRET || "tu_clave_secreta_aqui";
+
+// Middleware de Login - Validar usuario y crear token
+exports.login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Validar que env envíe email y password
+    if (!email || !password) {
+      return res.status(400).json({
+        mensaje: "Email y password son requeridos",
+      });
+    }
+
+    // Buscar usuario
+    const usuario = await Usuario.findOne({ email });
+
+    if (!usuario) {
+      return res.status(401).json({
+        mensaje: "Credenciales inválidas",
+      });
+    }
+
+    // Validar password (aquí deberías usar bcrypt en producción)
+    if (usuario.password !== password) {
+      return res.status(401).json({
+        mensaje: "Credenciales inválidas",
+      });
+    }
+
+    // Verificar si está activo
+    if (!usuario.activo) {
+      return res.status(401).json({
+        mensaje: "Usuario inactivo",
+      });
+    }
+
+    // Generar token JWT
+    const token = jwt.sign(
+      { id: usuario._id, email: usuario.email },
+      SECRET_KEY,
+      { expiresIn: "24h" }
+    );
+
+    res.status(200).json({
+      mensaje: "Login exitoso",
+      token,
+      usuario: {
+        id: usuario._id,
+        email: usuario.email,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Middleware de Validación de Token
+exports.validarToken = (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({
+        mensaje: "Token no proporcionado",
+      });
+    }
+
+    const decoded = jwt.verify(token, SECRET_KEY);
+    req.usuario = decoded;
+    next();
+  } catch (error) {
+    return res.status(401).json({
+      mensaje: "Token inválido o expirado",
+      error: error.message,
+    });
+  }
+};
+
+// Middleware para refrescar token
+exports.refrescarToken = (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({
+        mensaje: "Token no proporcionado",
+      });
+    }
+
+    const decoded = jwt.verify(token, SECRET_KEY);
+    const nuevoToken = jwt.sign(
+      { id: decoded.id, email: decoded.email },
+      SECRET_KEY,
+      { expiresIn: "24h" }
+    );
+
+    res.status(200).json({
+      mensaje: "Token refrescado",
+      token: nuevoToken,
+    });
+  } catch (error) {
+    return res.status(401).json({
+      mensaje: "Token inválido",
+      error: error.message,
+    });
+  }
+};

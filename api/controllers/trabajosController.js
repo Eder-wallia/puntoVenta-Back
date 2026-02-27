@@ -1,6 +1,7 @@
 const TrabajoRegistrado = require("../db/models/trabajoRegistradoModel");
 const Cliente = require("../db/models/clientesModel");
 const Vehiculo = require("../db/models/vehiculosModel");
+const { generarCodigoRespuesta } = require("../services/responseService");
 
 // Crear trabajo registrado
 exports.crearTrabajo = async (req, res) => {
@@ -19,12 +20,20 @@ exports.crearTrabajo = async (req, res) => {
     // Validar referencias
     const cliente = await Cliente.findById(clienteId);
     if (!cliente) {
-      return res.status(404).json({ mensaje: "Cliente no encontrado" });
+      return res.status(404).json({
+        replayCode: generarCodigoRespuesta(),
+        estatus: 404,
+        mensaje: "Cliente no encontrado",
+      });
     }
 
     const vehiculo = await Vehiculo.findById(vehiculoId);
     if (!vehiculo) {
-      return res.status(404).json({ mensaje: "Vehículo no encontrado" });
+      return res.status(404).json({
+        replayCode: generarCodigoRespuesta(),
+        estatus: 404,
+        mensaje: "Vehículo no encontrado",
+      });
     }
 
     const nuevoTrabajo = new TrabajoRegistrado({
@@ -50,11 +59,17 @@ exports.crearTrabajo = async (req, res) => {
 
     await nuevoTrabajo.save();
     res.status(201).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 201,
       mensaje: "Trabajo registrado correctamente",
       trabajo: nuevoTrabajo,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 500,
+      error: error.message,
+    });
   }
 };
 
@@ -68,11 +83,17 @@ exports.obtenerTrabajos = async (req, res) => {
       .populate("lastModifiedBy");
 
     res.status(200).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 200,
       total: trabajos.length,
       trabajos,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 500,
+      error: error.message,
+    });
   }
 };
 
@@ -87,12 +108,24 @@ exports.obtenerTrabajoPorId = async (req, res) => {
       .populate("lastModifiedBy");
 
     if (!trabajo) {
-      return res.status(404).json({ mensaje: "Trabajo no encontrado" });
+      return res.status(404).json({
+        replayCode: generarCodigoRespuesta(),
+        estatus: 404,
+        mensaje: "Trabajo no encontrado",
+      });
     }
 
-    res.status(200).json(trabajo);
+    res.status(200).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 200,
+      trabajo,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 500,
+      error: error.message,
+    });
   }
 };
 
@@ -110,34 +143,44 @@ exports.actualizarTrabajo = async (req, res) => {
       lastModifiedBy,
     } = req.body;
 
-    const trabajo = await TrabajoRegistrado.findById(id);
+    const trabajoItem = await TrabajoRegistrado.findById(id);
 
-    if (!trabajo) {
-      return res.status(404).json({ mensaje: "Trabajo no encontrado" });
+    if (!trabajoItem) {
+      return res.status(404).json({
+        replayCode: generarCodigoRespuesta(),
+        estatus: 404,
+        mensaje: "Trabajo no encontrado",
+      });
     }
 
     // Actualizar campos
-    if (servicios) trabajo.servicios = servicios;
-    if (refacciones) trabajo.refacciones = refacciones;
-    if (manoDeObra) trabajo.manoDeObra = manoDeObra;
+    if (servicios) trabajoItem.servicios = servicios;
+    if (refacciones) trabajoItem.refacciones = refacciones;
+    if (manoDeObra) trabajoItem.manoDeObra = manoDeObra;
     if (observacionesTecnicas)
-      trabajo.observacionesTecnicas = observacionesTecnicas;
+      trabajoItem.observacionesTecnicas = observacionesTecnicas;
     if (resumenFinanciero)
-      trabajo.resumenFinanciero = resumenFinanciero;
-    if (estatus) trabajo.estatus = estatus;
-    if (lastModifiedBy) trabajo.lastModifiedBy = lastModifiedBy;
+      trabajoItem.resumenFinanciero = resumenFinanciero;
+    if (estatus) trabajoItem.estatus = estatus;
+    if (lastModifiedBy) trabajoItem.lastModifiedBy = lastModifiedBy;
 
-    trabajo.version += 1;
-    trabajo.lastModifiedAt = new Date();
+    trabajoItem.version += 1;
+    trabajoItem.lastModifiedAt = new Date();
 
-    await trabajo.save();
+    await trabajoItem.save();
 
     res.status(200).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 200,
       mensaje: "Trabajo actualizado correctamente",
-      trabajo,
+      trabajo: trabajoItem,
     });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (errorItem) {
+    res.status(500).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 500,
+      error: errorItem.message,
+    });
   }
 };
 
@@ -148,7 +191,11 @@ exports.cambiarEstatus = async (req, res) => {
     const { estatus, usuario } = req.body;
 
     if (!estatus) {
-      return res.status(400).json({ mensaje: "El estatus es requerido" });
+      return res.status(400).json({
+        replayCode: generarCodigoRespuesta(),
+        estatus: 400,
+        mensaje: "El estatus es requerido",
+      });
     }
 
     const validoEstatus = [
@@ -159,37 +206,49 @@ exports.cambiarEstatus = async (req, res) => {
     ];
     if (!validoEstatus.includes(estatus)) {
       return res.status(400).json({
+        replayCode: generarCodigoRespuesta(),
+        estatus: 400,
         mensaje: `Estatus inválido. Debe ser uno de: ${validoEstatus.join(", ")}`,
       });
     }
 
-    const trabajo = await TrabajoRegistrado.findById(id);
+    const trabajoCambio = await TrabajoRegistrado.findById(id);
 
-    if (!trabajo) {
-      return res.status(404).json({ mensaje: "Trabajo no encontrado" });
+    if (!trabajoCambio) {
+      return res.status(404).json({
+        replayCode: generarCodigoRespuesta(),
+        estatus: 404,
+        mensaje: "Trabajo no encontrado",
+      });
     }
 
-    trabajo.estatus = estatus;
-    trabajo.lastModifiedAt = new Date();
-    if (usuario) trabajo.lastModifiedBy = usuario;
+    trabajoCambio.estatus = estatus;
+    trabajoCambio.lastModifiedAt = new Date();
+    if (usuario) trabajoCambio.lastModifiedBy = usuario;
 
     // Registrar en historial de estados
-    if (trabajo.historialEstados) {
-      trabajo.historialEstados.push({
+    if (trabajoCambio.historialEstados) {
+      trabajoCambio.historialEstados.push({
         estado: estatus,
         fecha: new Date(),
         usuario,
       });
     }
 
-    await trabajo.save();
+    await trabajoCambio.save();
 
     res.status(200).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 200,
       mensaje: "Estatus actualizado correctamente",
-      trabajo,
+      trabajo: trabajoCambio,
     });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (errorCambio) {
+    res.status(500).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 500,
+      error: errorCambio.message,
+    });
   }
 };
 
@@ -204,14 +263,24 @@ exports.eliminarTrabajo = async (req, res) => {
     );
 
     if (!trabajo) {
-      return res.status(404).json({ mensaje: "Trabajo no encontrado" });
+      return res.status(404).json({
+        replayCode: generarCodigoRespuesta(),
+        estatus: 404,
+        mensaje: "Trabajo no encontrado",
+      });
     }
 
     res.status(200).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 200,
       mensaje: "Trabajo eliminado correctamente",
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 500,
+      error: error.message,
+    });
   }
 };
 
@@ -227,11 +296,17 @@ exports.obtenerTrabajosPorCliente = async (req, res) => {
       .populate("createdBy");
 
     res.status(200).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 200,
       total: trabajos.length,
       trabajos,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 500,
+      error: error.message,
+    });
   }
 };
 
@@ -247,10 +322,16 @@ exports.obtenerTrabajosPorEstatus = async (req, res) => {
       .populate("vehiculoId");
 
     res.status(200).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 200,
       total: trabajos.length,
       trabajos,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 500,
+      error: error.message,
+    });
   }
 };

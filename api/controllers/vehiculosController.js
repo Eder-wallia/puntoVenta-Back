@@ -3,26 +3,27 @@ const Vehiculo = require("../db/models/vehiculosModel");
 // Crear vehículo
 exports.crearVehiculo = async (req, res) => {
   try {
-    const { nombre, telefono, email, domicilio } = req.body;
+    const { marca, modelo, color, placas, kilometraje } = req.body;
 
-    if (!nombre || !telefono || !email || !domicilio) {
+    if (!marca || !modelo || !color || !placas || !kilometraje) {
       return res.status(400).json({
-        mensaje: "Nombre, teléfono, email y domicilio son requeridos",
+        mensaje: "Marca, modelo, color, placas y kilometraje son requeridos",
       });
     }
 
-    const vehiculoExistente = await Vehiculo.findOne({ email });
+    const vehiculoExistente = await Vehiculo.findOne({ placas });
     if (vehiculoExistente) {
       return res
         .status(400)
-        .json({ mensaje: "El email ya está registrado" });
+        .json({ mensaje: "El vehículo con esas placas ya está registrado" });
     }
 
     const nuevoVehiculo = new Vehiculo({
-      nombre,
-      telefono,
-      email,
-      domicilio,
+      marca,
+      modelo,
+      color,
+      placas,
+      kilometraje,
       deleted: false,
     });
 
@@ -69,11 +70,11 @@ exports.obtenerVehiculoPorId = async (req, res) => {
 exports.actualizarVehiculo = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nombre, telefono, email, domicilio } = req.body;
+    const { marca, modelo, color, placas, kilometraje } = req.body;
 
     const vehiculo = await Vehiculo.findByIdAndUpdate(
       id,
-      { nombre, telefono, email, domicilio },
+      { marca, modelo, color, placas, kilometraje },
       { new: true, runValidators: true }
     );
 

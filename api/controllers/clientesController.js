@@ -1,4 +1,5 @@
 const Cliente = require("../db/models/clientesModel");
+const { generarCodigoRespuesta } = require("../services/responseService");
 
 // Crear cliente
 exports.crearCliente = async (req, res) => {
@@ -6,14 +7,20 @@ exports.crearCliente = async (req, res) => {
     const { nombre, email, telefono, domicilio } = req.body;
 
     if (!nombre || !email) {
-      return res
-        .status(400)
-        .json({ mensaje: "Nombre y email son requeridos" });
+      return res.status(400).json({
+        replayCode: generarCodigoRespuesta(),
+        estatus: 400,
+        mensaje: "Nombre y email son requeridos",
+      });
     }
 
     const clienteExistente = await Cliente.findOne({ email });
     if (clienteExistente) {
-      return res.status(400).json({ mensaje: "El email ya está registrado" });
+      return res.status(400).json({
+        replayCode: generarCodigoRespuesta(),
+        estatus: 400,
+        mensaje: "El email ya está registrado",
+      });
     }
 
     const nuevoCliente = new Cliente({
@@ -26,11 +33,17 @@ exports.crearCliente = async (req, res) => {
 
     await nuevoCliente.save();
     res.status(201).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 201,
       mensaje: "Cliente creado correctamente",
       cliente: nuevoCliente,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 500,
+      error: error.message,
+    });
   }
 };
 
@@ -39,11 +52,17 @@ exports.obtenerClientes = async (req, res) => {
   try {
     const clientes = await Cliente.find();
     res.status(200).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 200,
       total: clientes.length,
       clientes,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 500,
+      error: error.message,
+    });
   }
 };
 
@@ -54,12 +73,24 @@ exports.obtenerClientePorId = async (req, res) => {
     const cliente = await Cliente.findById(id);
 
     if (!cliente) {
-      return res.status(404).json({ mensaje: "Cliente no encontrado" });
+      return res.status(404).json({
+        replayCode: generarCodigoRespuesta(),
+        estatus: 404,
+        mensaje: "Cliente no encontrado",
+      });
     }
 
-    res.status(200).json(cliente);
+    res.status(200).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 200,
+      cliente,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 500,
+      error: error.message,
+    });
   }
 };
 
@@ -84,15 +115,25 @@ exports.actualizarCliente = async (req, res) => {
     );
 
     if (!cliente) {
-      return res.status(404).json({ mensaje: "Cliente no encontrado" });
+      return res.status(404).json({
+        replayCode: generarCodigoRespuesta(),
+        estatus: 404,
+        mensaje: "Cliente no encontrado",
+      });
     }
 
     res.status(200).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 200,
       mensaje: "Cliente actualizado correctamente",
       cliente,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 500,
+      error: error.message,
+    });
   }
 };
 
@@ -103,13 +144,23 @@ exports.eliminarCliente = async (req, res) => {
     const cliente = await Cliente.findByIdAndDelete(id);
 
     if (!cliente) {
-      return res.status(404).json({ mensaje: "Cliente no encontrado" });
+      return res.status(404).json({
+        replayCode: generarCodigoRespuesta(),
+        estatus: 404,
+        mensaje: "Cliente no encontrado",
+      });
     }
 
     res.status(200).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 200,
       mensaje: "Cliente eliminado correctamente",
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 500,
+      error: error.message,
+    });
   }
 };

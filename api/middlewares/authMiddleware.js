@@ -1,6 +1,7 @@
 const Usuario = require("../db/models/loginModel");
 const jwt = require("jsonwebtoken");
 const { comparePassword } = require("../services/passwordService");
+const { generarCodigoRespuesta } = require("../services/responseService");
 
 const SECRET_KEY = process.env.SECRET_KEY;
 
@@ -12,6 +13,8 @@ exports.login = async (req, res) => {
     // Validar que env envíe email y password
     if (!email || !password) {
       return res.status(400).json({
+        replayCode: generarCodigoRespuesta(),
+        estatus: 400,
         mensaje: "Email y password son requeridos",
       });
     }
@@ -22,6 +25,8 @@ exports.login = async (req, res) => {
     if (!usuario) {
       console.log("Usuario no encontrado con email:", email);
       return res.status(401).json({
+        replayCode: generarCodigoRespuesta(),
+        estatus: 401,
         mensaje: "Credenciales inválidas",
       });
     }
@@ -31,6 +36,8 @@ exports.login = async (req, res) => {
     if (!passwordValido) {
       console.log("Password inválido para email:", email);
       return res.status(401).json({
+        replayCode: generarCodigoRespuesta(),
+        estatus: 401,
         mensaje: "Credenciales inválidas",
       });
     }
@@ -39,6 +46,8 @@ exports.login = async (req, res) => {
     if (!usuario.activo) {
       console.log("Usuario inactivo con email:", email);
       return res.status(401).json({
+        replayCode: generarCodigoRespuesta(),
+        estatus: 401,
         mensaje: "Usuario inactivo",
       });
     }
@@ -51,6 +60,8 @@ exports.login = async (req, res) => {
     );
 
     res.status(200).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 200,
       mensaje: "Login exitoso",
       token,
       usuario: {
@@ -59,7 +70,11 @@ exports.login = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 500,
+      error: error.message,
+    });
   }
 };
 
@@ -79,6 +94,8 @@ exports.validarToken = (req, res, next) => {
     next();
   } catch (error) {
     return res.status(401).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 401,
       mensaje: "Token inválido o expirado",
       error: error.message,
     });
@@ -104,11 +121,15 @@ exports.refrescarToken = (req, res) => {
     );
 
     res.status(200).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 200,
       mensaje: "Token refrescado",
       token: nuevoToken,
     });
   } catch (error) {
     return res.status(401).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 401,
       mensaje: "Token inválido",
       error: error.message,
     });

@@ -23,7 +23,7 @@ exports.crearTrabajo = async (req, res) => {
       return res.status(404).json({
         replayCode: generarCodigoRespuesta(),
         estatus: 404,
-        mensaje: "Cliente no encontrado",
+        replyText: "Cliente no encontrado",
       });
     }
 
@@ -32,7 +32,7 @@ exports.crearTrabajo = async (req, res) => {
       return res.status(404).json({
         replayCode: generarCodigoRespuesta(),
         estatus: 404,
-        mensaje: "Vehículo no encontrado",
+        replyText: "Vehículo no encontrado",
       });
     }
 
@@ -61,7 +61,7 @@ exports.crearTrabajo = async (req, res) => {
     res.status(201).json({
       replayCode: generarCodigoRespuesta(),
       estatus: 201,
-      mensaje: "Trabajo registrado correctamente",
+      replyText: "Trabajo registrado correctamente",
       trabajo: nuevoTrabajo,
     });
   } catch (error) {
@@ -111,7 +111,7 @@ exports.obtenerTrabajoPorId = async (req, res) => {
       return res.status(404).json({
         replayCode: generarCodigoRespuesta(),
         estatus: 404,
-        mensaje: "Trabajo no encontrado",
+        replyText: "Trabajo no encontrado",
       });
     }
 
@@ -149,7 +149,7 @@ exports.actualizarTrabajo = async (req, res) => {
       return res.status(404).json({
         replayCode: generarCodigoRespuesta(),
         estatus: 404,
-        mensaje: "Trabajo no encontrado",
+        replyText: "Trabajo no encontrado",
       });
     }
 
@@ -172,7 +172,7 @@ exports.actualizarTrabajo = async (req, res) => {
     res.status(200).json({
       replayCode: generarCodigoRespuesta(),
       estatus: 200,
-      mensaje: "Trabajo actualizado correctamente",
+      replyText: "Trabajo actualizado correctamente",
       trabajo: trabajoItem,
     });
   } catch (errorItem) {
@@ -194,7 +194,7 @@ exports.cambiarEstatus = async (req, res) => {
       return res.status(400).json({
         replayCode: generarCodigoRespuesta(),
         estatus: 400,
-        mensaje: "El estatus es requerido",
+        replyText: "El estatus es requerido",
       });
     }
 
@@ -208,7 +208,7 @@ exports.cambiarEstatus = async (req, res) => {
       return res.status(400).json({
         replayCode: generarCodigoRespuesta(),
         estatus: 400,
-        mensaje: `Estatus inválido. Debe ser uno de: ${validoEstatus.join(", ")}`,
+        replyText: `Estatus inválido. Debe ser uno de: ${validoEstatus.join(", ")}`,
       });
     }
 
@@ -218,7 +218,7 @@ exports.cambiarEstatus = async (req, res) => {
       return res.status(404).json({
         replayCode: generarCodigoRespuesta(),
         estatus: 404,
-        mensaje: "Trabajo no encontrado",
+        replyText: "Trabajo no encontrado",
       });
     }
 
@@ -240,7 +240,7 @@ exports.cambiarEstatus = async (req, res) => {
     res.status(200).json({
       replayCode: generarCodigoRespuesta(),
       estatus: 200,
-      mensaje: "Estatus actualizado correctamente",
+      replyText: "Estatus actualizado correctamente",
       trabajo: trabajoCambio,
     });
   } catch (errorCambio) {
@@ -266,14 +266,14 @@ exports.eliminarTrabajo = async (req, res) => {
       return res.status(404).json({
         replayCode: generarCodigoRespuesta(),
         estatus: 404,
-        mensaje: "Trabajo no encontrado",
+        replyText: "Trabajo no encontrado",
       });
     }
 
     res.status(200).json({
       replayCode: generarCodigoRespuesta(),
       estatus: 200,
-      mensaje: "Trabajo eliminado correctamente",
+      replyText: "Trabajo eliminado correctamente",
     });
   } catch (error) {
     res.status(500).json({

@@ -11,7 +11,7 @@ exports.crearCliente = async (req, res) => {
       return res.status(400).json({
         replayCode: generarCodigoRespuesta(),
         estatus: 400,
-        mensaje: "Nombre y email son requeridos",
+        replyText: "Nombre y email son requeridos",
       });
     }
 
@@ -20,7 +20,7 @@ exports.crearCliente = async (req, res) => {
       return res.status(400).json({
         replayCode: generarCodigoRespuesta(),
         estatus: 400,
-        mensaje: "El email ya está registrado",
+        replyText: "El email ya está registrado",
       });
     }
 
@@ -40,7 +40,7 @@ exports.crearCliente = async (req, res) => {
     res.status(201).json({
       replayCode: generarCodigoRespuesta(),
       estatus: 201,
-      mensaje: "Cliente creado correctamente",
+      replyText: "Cliente creado correctamente",
       cliente: nuevoCliente,
     });
   } catch (error) {
@@ -81,7 +81,7 @@ exports.obtenerClientePorId = async (req, res) => {
       return res.status(404).json({
         replayCode: generarCodigoRespuesta(),
         estatus: 404,
-        mensaje: "Cliente no encontrado",
+        replyText: "Cliente no encontrado",
       });
     }
 
@@ -123,14 +123,14 @@ exports.actualizarCliente = async (req, res) => {
       return res.status(404).json({
         replayCode: generarCodigoRespuesta(),
         estatus: 404,
-        mensaje: "Cliente no encontrado",
+        replyText: "Cliente no encontrado",
       });
     }
 
     res.status(200).json({
       replayCode: generarCodigoRespuesta(),
       estatus: 200,
-      mensaje: "Cliente actualizado correctamente",
+      replyText: "Cliente actualizado correctamente",
       cliente,
     });
   } catch (error) {
@@ -152,14 +152,14 @@ exports.eliminarCliente = async (req, res) => {
       return res.status(404).json({
         replayCode: generarCodigoRespuesta(),
         estatus: 404,
-        mensaje: "Cliente no encontrado",
+        replyText: "Cliente no encontrado",
       });
     }
 
     res.status(200).json({
       replayCode: generarCodigoRespuesta(),
       estatus: 200,
-      mensaje: "Cliente eliminado correctamente",
+      replyText: "Cliente eliminado correctamente",
     });
   } catch (error) {
     res.status(500).json({

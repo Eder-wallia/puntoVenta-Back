@@ -1,6 +1,7 @@
 const Vehiculo = require("../db/models/vehiculosModel");
 const Cliente = require("../db/models/clientesModel");
 const { generarCodigoRespuesta } = require("../services/responseService");
+const { getNextId } = require("../services/counterService");
 
 // Crear vehículo
 exports.crearVehiculo = async (req, res) => {
@@ -25,6 +26,16 @@ exports.crearVehiculo = async (req, res) => {
       });
     }
 
+    // Generar ID secuencial automático
+    let vehiculoId = await getNextId("vehiculo");
+    
+    // Validar que el ID no existe ya
+    let vehiculoExistente = await Vehiculo.findOne({ vehiculoId });
+    while (vehiculoExistente) {
+      vehiculoId = await getNextId("vehiculo");
+      vehiculoExistente = await Vehiculo.findOne({ vehiculoId });
+    }
+
     // Validar que el cliente existe
     const cliente = await Cliente.findOne({ clienteId });
     if (!cliente) {
@@ -37,6 +48,7 @@ exports.crearVehiculo = async (req, res) => {
 
     const nuevoVehiculo = new Vehiculo({
       clienteId,
+      vehiculoId,
       tipo,
       marca: marca || null,
       modelo: modelo || null,

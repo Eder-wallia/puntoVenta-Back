@@ -6,6 +6,10 @@ const vehiculoSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    vehiculoId: {
+      type: String,
+      required: true,
+    },
     tipo: {
       type: String,
       enum: ["moto", "carro"],

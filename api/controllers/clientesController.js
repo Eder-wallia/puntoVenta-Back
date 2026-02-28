@@ -1,5 +1,6 @@
 const Cliente = require("../db/models/clientesModel");
 const { generarCodigoRespuesta } = require("../services/responseService");
+const { getNextId } = require("../services/counterService");
 
 // Crear cliente
 exports.crearCliente = async (req, res) => {
@@ -23,7 +24,11 @@ exports.crearCliente = async (req, res) => {
       });
     }
 
+    // Generar ID secuencial automático
+    const clienteId = await getNextId("cliente");
+
     const nuevoCliente = new Cliente({
+      clienteId: clienteId.toString(), // Convertir a string si es necesario
       nombre,
       email,
       telefono,

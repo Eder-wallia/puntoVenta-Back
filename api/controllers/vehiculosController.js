@@ -1,52 +1,84 @@
 const Vehiculo = require("../db/models/vehiculosModel");
+const Cliente = require("../db/models/clientesModel");
+const { generarCodigoRespuesta } = require("../services/responseService");
 
 // Crear vehículo
 exports.crearVehiculo = async (req, res) => {
   try {
-    const { marca, modelo, color, placas, kilometraje } = req.body;
+    const { clienteId, tipo, marca, modelo, color, placas, kilometraje } = req.body;
 
-    if (!marca || !modelo || !color || !placas || !kilometraje) {
+    // Validar campos obligatorios
+    if (!clienteId || !tipo) {
       return res.status(400).json({
-        mensaje: "Marca, modelo, color, placas y kilometraje son requeridos",
+        replayCode: generarCodigoRespuesta(),
+        estatus: 400,
+        replyText: "clienteId y tipo (moto/carro) son requeridos",
       });
     }
 
-    const vehiculoExistente = await Vehiculo.findOne({ placas });
-    if (vehiculoExistente) {
-      return res
-        .status(400)
-        .json({ mensaje: "El vehículo con esas placas ya está registrado" });
+    // Validar que tipo sea válido
+    if (!['moto', 'carro'].includes(tipo)) {
+      return res.status(400).json({
+        replayCode: generarCodigoRespuesta(),
+        estatus: 400,
+        replyText: "Tipo debe ser 'moto' o 'carro'",
+      });
+    }
+
+    // Validar que el cliente existe
+    const cliente = await Cliente.findOne({ clienteId });
+    if (!cliente) {
+      return res.status(404).json({
+        replayCode: generarCodigoRespuesta(),
+        estatus: 404,
+        replyText: "Cliente no encontrado",
+      });
     }
 
     const nuevoVehiculo = new Vehiculo({
-      marca,
-      modelo,
-      color,
-      placas,
-      kilometraje,
+      clienteId,
+      tipo,
+      marca: marca || null,
+      modelo: modelo || null,
+      color: color || null,
+      placas: placas || null,
+      kilometraje: kilometraje || 0,
       deleted: false,
     });
 
     await nuevoVehiculo.save();
     res.status(201).json({
-      mensaje: "Vehículo creado correctamente",
+      replayCode: generarCodigoRespuesta(),
+      estatus: 201,
+      replyText: "Vehículo creado correctamente",
       vehiculo: nuevoVehiculo,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error al crear vehículo:", error);
+    res.status(500).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 500,
+      error: error.message,
+    });
   }
 };
 
 // Obtener todos los vehículos (no eliminados)
 exports.obtenerVehiculos = async (req, res) => {
   try {
-    const vehiculos = await Vehiculo.find({ deleted: false });
+    const vehiculos = await Vehiculo.find({ deleted: false }).populate("clienteId");
     res.status(200).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 200,
       total: vehiculos.length,
       vehiculos,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 500,
+      error: error.message,
+    });
   }
 };
 
@@ -54,15 +86,27 @@ exports.obtenerVehiculos = async (req, res) => {
 exports.obtenerVehiculoPorId = async (req, res) => {
   try {
     const { id } = req.params;
-    const vehiculo = await Vehiculo.findById(id);
+    const vehiculo = await Vehiculo.findById(id).populate("clienteId");
 
     if (!vehiculo) {
-      return res.status(404).json({ mensaje: "Vehículo no encontrado" });
+      return res.status(404).json({
+        replayCode: generarCodigoRespuesta(),
+        estatus: 404,
+        replyText: "Vehículo no encontrado",
+      });
     }
 
-    res.status(200).json(vehiculo);
+    res.status(200).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 200,
+      vehiculo,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 500,
+      error: error.message,
+    });
   }
 };
 
@@ -70,24 +114,51 @@ exports.obtenerVehiculoPorId = async (req, res) => {
 exports.actualizarVehiculo = async (req, res) => {
   try {
     const { id } = req.params;
-    const { marca, modelo, color, placas, kilometraje } = req.body;
+    const { tipo, marca, modelo, color, placas, kilometraje } = req.body;
+
+    // Validar tipo si se proporciona
+    if (tipo && !['moto', 'carro'].includes(tipo)) {
+      return res.status(400).json({
+        replayCode: generarCodigoRespuesta(),
+        estatus: 400,
+        replyText: "Tipo debe ser 'moto' o 'carro'",
+      });
+    }
+
+    const updateData = {};
+    if (tipo) updateData.tipo = tipo;
+    if (marca) updateData.marca = marca;
+    if (modelo) updateData.modelo = modelo;
+    if (color) updateData.color = color;
+    if (placas) updateData.placas = placas;
+    if (kilometraje !== undefined) updateData.kilometraje = kilometraje;
 
     const vehiculo = await Vehiculo.findByIdAndUpdate(
       id,
-      { marca, modelo, color, placas, kilometraje },
+      updateData,
       { new: true, runValidators: true }
-    );
+    ).populate("clienteId");
 
     if (!vehiculo) {
-      return res.status(404).json({ mensaje: "Vehículo no encontrado" });
+      return res.status(404).json({
+        replayCode: generarCodigoRespuesta(),
+        estatus: 404,
+        replyText: "Vehículo no encontrado",
+      });
     }
 
     res.status(200).json({
-      mensaje: "Vehículo actualizado correctamente",
+      replayCode: generarCodigoRespuesta(),
+      estatus: 200,
+      replyText: "Vehículo actualizado correctamente",
       vehiculo,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 500,
+      error: error.message,
+    });
   }
 };
 
@@ -102,13 +173,23 @@ exports.eliminarVehiculo = async (req, res) => {
     );
 
     if (!vehiculo) {
-      return res.status(404).json({ mensaje: "Vehículo no encontrado" });
+      return res.status(404).json({
+        replayCode: generarCodigoRespuesta(),
+        estatus: 404,
+        replyText: "Vehículo no encontrado",
+      });
     }
 
     res.status(200).json({
-      mensaje: "Vehículo eliminado correctamente",
+      replayCode: generarCodigoRespuesta(),
+      estatus: 200,
+      replyText: "Vehículo eliminado correctamente",
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 500,
+      error: error.message,
+    });
   }
 };

@@ -18,7 +18,7 @@ exports.crearTrabajo = async (req, res) => {
     } = req.body;
 
     // Validar referencias
-    const cliente = await Cliente.findById(clienteId);
+    const cliente = await Cliente.findOne({ clienteId });
     if (!cliente) {
       return res.status(404).json({
         replayCode: generarCodigoRespuesta(),

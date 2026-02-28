@@ -20,8 +20,7 @@ const manoDeObraSchema = new mongoose.Schema({
 const trabajoRegistradoSchema = new mongoose.Schema(
   {
     clienteId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Cliente",
+      type: String,
       required: true,
     },
     vehiculoId: {

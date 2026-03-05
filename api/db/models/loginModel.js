@@ -10,6 +10,16 @@ const loginSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  nombre: {
+    type: String,
+    required: true,
+  },
+  rol: {
+    type: String,
+    enum: ["admin", "mecanico"],
+    default: "mecanico",
+  },
+
   activo: {
     type: Boolean,
     default: true,

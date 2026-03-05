@@ -8,14 +8,14 @@ const SECRET_KEY = process.env.SECRET_KEY;
 // Middleware de Login - Validar usuario y crear token
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, rol, nombre } = req.body;
 
     // Validar que env envíe email y password
-    if (!email || !password) {
+    if (!email || !password || !rol || !nombre) {
       return res.status(400).json({
         replayCode: generarCodigoRespuesta(),
         estatus: 400,
-        mensaje: "Email y password son requeridos",
+        replyText: "Email, password, rol y nombre son requeridos",
       });
     }
 
@@ -27,7 +27,7 @@ exports.login = async (req, res) => {
       return res.status(401).json({
         replayCode: generarCodigoRespuesta(),
         estatus: 401,
-        mensaje: "Credenciales inválidas",
+        replyText: "Credenciales inválidas",
       });
     }
 
@@ -38,7 +38,7 @@ exports.login = async (req, res) => {
       return res.status(401).json({
         replayCode: generarCodigoRespuesta(),
         estatus: 401,
-        mensaje: "Credenciales inválidas",
+        replyText: "Credenciales inválidas",
       });
     }
 
@@ -48,7 +48,7 @@ exports.login = async (req, res) => {
       return res.status(401).json({
         replayCode: generarCodigoRespuesta(),
         estatus: 401,
-        mensaje: "Usuario inactivo",
+        replyText: "Usuario inactivo",
       });
     }
 
@@ -62,11 +62,13 @@ exports.login = async (req, res) => {
     res.status(200).json({
       replayCode: generarCodigoRespuesta(),
       estatus: 200,
-      mensaje: "Login exitoso",
+      replyText: "Login exitoso",
       token,
       usuario: {
         id: usuario._id,
         email: usuario.email,
+        nombre: usuario.nombre,
+        rol: usuario.rol,
       },
     });
   } catch (error) {
@@ -85,7 +87,7 @@ exports.validarToken = (req, res, next) => {
 
     if (!token) {
       return res.status(401).json({
-        mensaje: "Token no proporcionado",
+        replyText: "Token no proporcionado",
       });
     }
 
@@ -96,7 +98,7 @@ exports.validarToken = (req, res, next) => {
     return res.status(401).json({
       replayCode: generarCodigoRespuesta(),
       estatus: 401,
-      mensaje: "Token inválido o expirado",
+      replyText: "Token inválido o expirado",
       error: error.message,
     });
   }
@@ -109,7 +111,7 @@ exports.refrescarToken = (req, res) => {
 
     if (!token) {
       return res.status(401).json({
-        mensaje: "Token no proporcionado",
+        replyText: "Token no proporcionado",
       });
     }
 
@@ -123,14 +125,14 @@ exports.refrescarToken = (req, res) => {
     res.status(200).json({
       replayCode: generarCodigoRespuesta(),
       estatus: 200,
-      mensaje: "Token refrescado",
+      replyText: "Token refrescado",
       token: nuevoToken,
     });
   } catch (error) {
     return res.status(401).json({
       replayCode: generarCodigoRespuesta(),
       estatus: 401,
-      mensaje: "Token inválido",
+      replyText: "Token inválido",
       error: error.message,
     });
   }

@@ -16,7 +16,7 @@ const loginSchema = new mongoose.Schema({
   },
   rol: {
     type: String,
-    enum: ["admin", "mecanico"],
+    enum: ["administrador", "mecanico"],
     default: "mecanico",
   },
 

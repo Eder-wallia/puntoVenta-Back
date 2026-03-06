@@ -16,6 +16,8 @@ exports.crearCliente = async (req, res) => {
     }
 
     const clienteExistente = await Cliente.findOne({ email });
+    
+    //validacion cliente existe
     if (clienteExistente) {
       return res.status(400).json({
         replayCode: generarCodigoRespuesta(),

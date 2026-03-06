@@ -20,26 +20,34 @@ exports.login = async (req, res) => {
     }
 
     // Buscar usuario
-    const usuario = await Usuario.findOne({ email });
+    let usuario = await Usuario.findOne({ email });
 
+    // Si no existe, crear nuevo usuario
     if (!usuario) {
-      console.log("Usuario no encontrado con email:", email);
-      return res.status(401).json({
-        replayCode: generarCodigoRespuesta(),
-        estatus: 401,
-        replyText: "Credenciales inválidas",
+      const { hashPassword } = require("../services/passwordService");
+      const hashedPassword = await hashPassword(password);
+      
+      usuario = new Usuario({
+        email,
+        password: hashedPassword,
+        nombre,
+        rol,
+        activo: true,
       });
-    }
-
-    // Validar password con servicio
-    const passwordValido = await comparePassword(password, usuario.password);
-    if (!passwordValido) {
-      console.log("Password inválido para email:", email);
-      return res.status(401).json({
-        replayCode: generarCodigoRespuesta(),
-        estatus: 401,
-        replyText: "Credenciales inválidas",
-      });
+      
+      await usuario.save();
+      console.log("Usuario creado con email:", email);
+    } else {
+      // Si existe, validar password
+      const passwordValido = await comparePassword(password, usuario.password);
+      if (!passwordValido) {
+        console.log("Password inválido para email:", email);
+        return res.status(401).json({
+          replayCode: generarCodigoRespuesta(),
+          estatus: 401,
+          replyText: "Credenciales inválidas",
+        });
+      }
     }
 
     // Verificar si está activo

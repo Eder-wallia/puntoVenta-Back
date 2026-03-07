@@ -8,14 +8,14 @@ const SECRET_KEY = process.env.SECRET_KEY;
 // Middleware de Login - Validar usuario y crear token
 exports.login = async (req, res) => {
   try {
-    const { email, password, rol, nombre } = req.body;
+    const { email, password } = req.body;
 
     // Validar que env envíe email y password
-    if (!email || !password || !rol || !nombre) {
+    if (!email || !password) {
       return res.status(400).json({
         replayCode: generarCodigoRespuesta(),
         estatus: 400,
-        replyText: "Email, password, rol y nombre son requeridos",
+        replyText: "Email y password son requeridos",
       });
     }
 

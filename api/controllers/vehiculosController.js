@@ -6,7 +6,7 @@ const { getNextId } = require("../services/counterService");
 // Crear vehículo
 exports.crearVehiculo = async (req, res) => {
   try {
-    const { clienteId, tipo, marca, modelo, color, placas, kilometraje } = req.body;
+    const { clienteId, tipo, marca, modelo, color, placas, kilometraje, observaciones } = req.body;
 
     // Validar campos obligatorios
     if (!clienteId || !tipo) {
@@ -55,6 +55,7 @@ exports.crearVehiculo = async (req, res) => {
       color: color || null,
       placas: placas || null,
       kilometraje: kilometraje || 0,
+      observaciones: observaciones || null,
       deleted: false,
     });
 
@@ -126,7 +127,7 @@ exports.obtenerVehiculoPorId = async (req, res) => {
 exports.actualizarVehiculo = async (req, res) => {
   try {
     const { id } = req.params;
-    const { tipo, marca, modelo, color, placas, kilometraje } = req.body;
+    const { tipo, marca, modelo, color, placas, kilometraje, observaciones } = req.body;
 
     // Validar tipo si se proporciona
     if (tipo && !['moto', 'carro'].includes(tipo)) {
@@ -144,6 +145,7 @@ exports.actualizarVehiculo = async (req, res) => {
     if (color) updateData.color = color;
     if (placas) updateData.placas = placas;
     if (kilometraje !== undefined) updateData.kilometraje = kilometraje;
+    if (observaciones) updateData.observaciones = observaciones;
 
     const vehiculo = await Vehiculo.findByIdAndUpdate(
       id,

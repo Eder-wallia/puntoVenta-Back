@@ -21,6 +21,7 @@ const vehiculoSchema = new mongoose.Schema(
     placas: String,
     kilometraje: Number,
     deleted: { type: Boolean, default: false },
+    observaciones: String,
   },
   { timestamps: true },
 );

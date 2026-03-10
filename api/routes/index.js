@@ -29,6 +29,7 @@ const routerApi = (app) => {
   router.post("/trabajos", validarToken, trabajosController.crearTrabajo);
   router.get("/trabajos", validarToken, trabajosController.obtenerTrabajos);
   router.get("/trabajos/:id", validarToken, trabajosController.obtenerTrabajoPorId);
+  router.get("/trabajos/vehiculo/:vehiculoId", validarToken, trabajosController.obtenerTrabajosPorVehiculo);
 //   router.put("/trabajos/:id", validarToken, trabajosController.actualizarTrabajo);
 //   router.delete("/trabajos/:id", validarToken, trabajosController.eliminarTrabajo);
 //   router.patch("/trabajos/:id/estatus", validarToken, trabajosController.cambiarEstatus);

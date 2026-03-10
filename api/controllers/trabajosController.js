@@ -27,7 +27,7 @@ exports.crearTrabajo = async (req, res) => {
       });
     }
 
-    const vehiculo = await Vehiculo.findById(vehiculoId);
+    const vehiculo = await Vehiculo.findOne({ vehiculoId });
     if (!vehiculo) {
       return res.status(404).json({
         replayCode: generarCodigoRespuesta(),
@@ -77,8 +77,6 @@ exports.crearTrabajo = async (req, res) => {
 exports.obtenerTrabajos = async (req, res) => {
   try {
     const trabajos = await TrabajoRegistrado.find({ deleted: false })
-      .populate("clienteId")
-      .populate("vehiculoId")
       .populate("createdBy")
       .populate("lastModifiedBy");
 
@@ -102,10 +100,8 @@ exports.obtenerTrabajoPorId = async (req, res) => {
   try {
     const { id } = req.params;
     const trabajo = await TrabajoRegistrado.findById(id)
-      .populate("clienteId")
-      .populate("vehiculoId")
-      .populate("createdBy")
-      .populate("lastModifiedBy");
+      .populate("createdBy", "", "Usuario")
+      .populate("lastModifiedBy", "", "Usuario");
 
     if (!trabajo) {
       return res.status(404).json({
@@ -318,8 +314,30 @@ exports.obtenerTrabajosPorEstatus = async (req, res) => {
       estatus,
       deleted: false,
     })
-      .populate("clienteId")
-      .populate("vehiculoId");
+      
+    res.status(200).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 200,
+      total: trabajos.length,
+      trabajos,
+    });
+  } catch (error) {
+    res.status(500).json({
+      replayCode: generarCodigoRespuesta(),
+      estatus: 500,
+      error: error.message,
+    });
+  }
+};
+
+// Obtener historial de trabajos por vehículo
+exports.obtenerTrabajosPorVehiculo = async (req, res) => {
+  try {
+    const { vehiculoId } = req.params;
+    const trabajos = await TrabajoRegistrado.find({
+      vehiculoId,
+      deleted: false,
+    }).sort({ createdAt: -1 });
 
     res.status(200).json({
       replayCode: generarCodigoRespuesta(),

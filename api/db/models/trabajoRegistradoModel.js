@@ -24,7 +24,7 @@ const trabajoRegistradoSchema = new mongoose.Schema(
       required: true,
     },
     vehiculoId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "Vehiculo",
       required: true,
     },

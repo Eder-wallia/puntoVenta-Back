@@ -17,12 +17,13 @@ exports.crearCliente = async (req, res) => {
 
     const clienteExistente = await Cliente.findOne({ email });
     
-    //validacion cliente existe
+    // Si el cliente ya existe, devolverlo (permite múltiples vehículos)
     if (clienteExistente) {
-      return res.status(400).json({
+      return res.status(200).json({
         replayCode: generarCodigoRespuesta(),
-        estatus: 400,
-        replyText: "El email ya está registrado",
+        estatus: 200,
+        replyText: "Cliente ya registrado",
+        cliente: clienteExistente,
       });
     }
 

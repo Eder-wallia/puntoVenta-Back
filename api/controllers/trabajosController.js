@@ -7,10 +7,10 @@ const path = require("path");
 const fs = require("fs");
 const TALLER_LOGO = path.resolve(__dirname, "../assets/logo_Taller.jpeg");
 const TALLER_ENCARGADO = "Erik Alexis Morales Mercdo";
-const TALLER_NOMBRE = "Taller y Refaccionaría M&C";
+const TALLER_NOMBRE = "Servicio Automotríz M&C";
 const TALLER_TELEFONO = "352 194 4826";
-const TALLER_DIRECCION = "Ciudad del Sol, La Piedad, Michoacan";
-const TALLER_EMAIL = "Erikolbrloko2510@gmail.com";
+const TALLER_DIRECCION = "C. Libra 248, Cd del Sol, 59310 La Piedad de Cabadas, Mich.";
+const TALLER_EMAIL = "Serviautomotrizmc@gmail.com";
 
 // Crear trabajo registrado
 exports.crearTrabajo = async (req, res) => {

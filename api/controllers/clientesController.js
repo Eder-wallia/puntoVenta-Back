@@ -7,11 +7,11 @@ exports.crearCliente = async (req, res) => {
   try {
     const { nombre, email, telefono, domicilio } = req.body;
 
-    if (!nombre || !email) {
+    if (!nombre) {
       return res.status(400).json({
         replayCode: generarCodigoRespuesta(),
         estatus: 400,
-        replyText: "Nombre y email son requeridos",
+        replyText: "Nombre es requerido",
       });
     }
 
